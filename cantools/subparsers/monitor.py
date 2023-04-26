@@ -14,6 +14,64 @@ from .__utils__ import format_message, format_multiplexed_name
 
 class QuitError(Exception):
     pass
+import cantools
+########################################################################################################
+# class MultiPacketDecoder:
+#     def __init__(self):
+#         self.multi_packet_payload_size = None
+#         self.multi_packet_num_packets = None
+#         self.multi_packet_pgn = None
+#         self.multi_packet_buffer = None
+
+#     def on_message(self, msg):
+#         global multi_packet_payload_size, multi_packet_num_packets, multi_packet_pgn, multi_packet_buffer
+#         msg_data = msg.data
+#         msg_id = msg.arbitration_id
+
+#         # Check if it is a multi-packet message
+#         if msg_id == 0x1CEC56F4:
+#             multi_packet_payload_size = msg_data[1] + (msg_data[2] << 8)
+#             multi_packet_num_packets = msg_data[3]
+#             multi_packet_pgn = msg_data[5] + (msg_data[6] << 8) + (msg_data[7] << 16)
+#             # Initialize a buffer for the message
+#             multi_packet_buffer = bytearray(multi_packet_payload_size)
+
+#         elif msg_id == 0x1CEB56F4:
+#             packet_num = msg_data[0] - 1
+#             if packet_num < multi_packet_num_packets:
+#                 for j in range(7):
+#                     byte_index = packet_num * 7 + j
+#                     if byte_index < multi_packet_payload_size:
+#                         multi_packet_buffer[byte_index] = msg_data[1 + j]
+#                 if packet_num == multi_packet_num_packets - 1:
+#                     # All packets have been received, process the message
+#                     if(multi_packet_pgn == 4352):
+#                         canid = 0x1C1156F4
+#                     if(multi_packet_pgn == 512):
+#                         canid = 0x1C0256F4
+#                     if(multi_packet_pgn == 1356):
+#                         canid = 0x1C0656F4
+#                     # decoded = db.decode_message(canid, multi_packet_buffer)
+#                     msg.data = multi_packet_buffer
+#                     msg.arbitration_id = canid
+#                     # decoded = msg.decode(msg.data, decode_containers=True)
+
+#                     # print(canid, ": ", decoded)
+#             else:
+#                 print(f"Packet {packet_num + 1} out of range")
+
+#         # else:
+#         #     # This is a regular message
+#         #     # Parse the message using the CAN database file
+#         #     try:
+#         #         decoded = msg.decode(msg.data, decode_containers=True)
+#         #     except:
+#         #         pass
+#             # Print the parsed data
+#             # print(msg_id, ": ",decoded)
+#         return msg
+
+##################################################################################################
 
 
 class Monitor(can.Listener):
@@ -41,6 +99,10 @@ class Monitor(can.Listener):
         self._discarded = 0
         self._basetime = None
         self._page_first_row = 0
+        self.multi_packet_payload_size = None
+        self.multi_packet_num_packets = None
+        self.multi_packet_pgn = None
+        self.multi_packet_buffer = None
 
         stdscr.keypad(True)
         stdscr.nodelay(True)
@@ -52,6 +114,7 @@ class Monitor(can.Listener):
 
         bus = self.create_bus(args)
         self._notifier = can.Notifier(bus, [self])
+        # self.multi_packet_decoder = MultiPacketDecoder()
 
     def create_bus(self, args):
         kwargs = {}
@@ -343,8 +406,55 @@ class Monitor(can.Listener):
 
         self._modified = True
 
-    def try_update_message(self):
-        message = self._queue.get_nowait()
+
+###################################################
+    def on_message(self):
+        msg = self._queue.get_nowait()
+        global multi_packet_payload_size, multi_packet_num_packets, multi_packet_pgn, multi_packet_buffer
+        msg_data = msg.data
+        msg_id = msg.arbitration_id
+
+        # Check if it is a multi-packet message
+        if msg_id == 0x1CEC56F4:
+            multi_packet_payload_size = msg_data[1] + (msg_data[2] << 8)
+            multi_packet_num_packets = msg_data[3]
+            multi_packet_pgn = msg_data[5] + (msg_data[6] << 8) + (msg_data[7] << 16)
+            # Initialize a buffer for the message
+            multi_packet_buffer = bytearray(multi_packet_payload_size)
+            return None
+
+        elif msg_id == 0x1CEB56F4:
+            packet_num = msg_data[0] - 1
+            if packet_num < multi_packet_num_packets:
+                for j in range(7):
+                    byte_index = packet_num * 7 + j
+                    if byte_index < multi_packet_payload_size:
+                        multi_packet_buffer[byte_index] = msg_data[1 + j]
+                if packet_num == multi_packet_num_packets - 1:
+                    # All packets have been received, process the message
+                    if(multi_packet_pgn == 4352):
+                        canid = 0x1C1156F4
+                    if(multi_packet_pgn == 512):
+                        canid = 0x1C0256F4
+                    if(multi_packet_pgn == 1536):
+                        canid = 0x1C0656F4
+                    # decoded = db.decode_message(canid, multi_packet_buffer)
+                    msg.data = multi_packet_buffer
+                    msg.arbitration_id = canid
+                    return msg
+                    # decoded = msg.decode(msg.data, decode_containers=True)
+
+                    # print(canid, ": ", decoded)
+                return None
+            else:
+                print(f"Packet {packet_num + 1} out of range")
+            return None
+        return msg
+        
+            
+###################################################
+    def try_update_message(self,message):
+        # message = self._queue.get_nowait()
         frame_id = message.arbitration_id
         data = message.data
         timestamp = message.timestamp
@@ -354,6 +464,11 @@ class Monitor(can.Listener):
 
         timestamp -= self._basetime
         self._received += 1
+        # The above code is retrieving a message from a database based on a given frame ID. The
+        # `get_message_by_frame_id()` method is called on the `_dbase` object, passing in the
+        # `frame_id` variable as an argument. The retrieved message is then assigned to the
+        # `message` variable.
+        # message = self._dbase.get_message_by_frame_id(frame_id)
 
         try:
             message = self._dbase.get_message_by_frame_id(frame_id)
@@ -408,6 +523,7 @@ class Monitor(can.Listener):
 
     def _try_update_container(self, dbmsg, timestamp, data):
         try:
+            # msg = self.multi_packet_decoder.on_message(dbmsg)
             decoded = dbmsg.decode(data, decode_containers=True)
         except:  # noqa: E722  # TODO: introduce cantools.DecodeError & cantools.EncodeError
             if self._single_line:
@@ -513,7 +629,9 @@ class Monitor(can.Listener):
 
         try:
             while True:
-                self.try_update_message()
+                msg = self.on_message()
+                if(msg is not None):
+                    self.try_update_message(msg)
                 modified = True
         except queue.Empty:
             pass
