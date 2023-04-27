@@ -1,7 +1,7 @@
 import argparse
 from typing import Any, Union
 
-import cantools
+import GBT_parser
 
 from ..database import Bus, Database, Message, Node
 from ..database.can.signal import NamedSignalValue

@@ -3,8 +3,8 @@
 import unittest
 import logging
 
-import cantools
-from cantools.subparsers.dump import formatting
+import GBT_parser
+from GBT_parser.subparsers.dump import formatting
 
 
 class CanToolsDumpTest(unittest.TestCase):

@@ -16,7 +16,7 @@ try:
 except ImportError:
     from io import StringIO
 
-import cantools
+import GBT_parser
 
 
 def with_fake_screen_width(screen_width):

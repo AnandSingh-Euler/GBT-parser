@@ -12,7 +12,7 @@ from .version import __version__
 # Remove once less users are using the old package structure.
 from . import database as db  # isort: skip
 
-__author__ = 'Erik Moqvist'
+__author__ = 'Anand Singh'
 
 class _ErrorSubparser:
     def __init__(self, subparser_name, error_message):

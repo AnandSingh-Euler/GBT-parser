@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-import cantools
+import GBT_parser
 
 
 class CanToolsConvertFullTest(unittest.TestCase):

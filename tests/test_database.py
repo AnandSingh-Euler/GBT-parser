@@ -14,18 +14,18 @@ import logging
 from xml.etree import ElementTree
 import timeit
 
-import cantools.autosar
-from cantools.database.utils import prune_signal_choices, sort_choices_by_value, sort_signals_by_name
+import GBT_parser.autosar
+from GBT_parser.database.utils import prune_signal_choices, sort_choices_by_value, sort_signals_by_name
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
 
-import cantools
-from cantools.database.can.formats import dbc
-from cantools.database import UnsupportedDatabaseFormatError
-from cantools.database.can.signal import NamedSignalValue
+import GBT_parser
+from GBT_parser.database.can.formats import dbc
+from GBT_parser.database import UnsupportedDatabaseFormatError
+from GBT_parser.database.can.signal import NamedSignalValue
 
 class CanToolsDatabaseTest(unittest.TestCase):
 

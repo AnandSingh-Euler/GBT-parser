@@ -7,7 +7,7 @@ import re
 import unittest
 from unittest import mock
 from io import StringIO
-import cantools
+import GBT_parser
 import matplotlib.pyplot
 import logging
 

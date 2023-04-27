@@ -11,9 +11,9 @@ def find_version():
                      re.MULTILINE).group(1)
 
 
-setup(name='GBT-parser',
+setup(name='GBT_parser',
       version=find_version(),
-      description='CAN BUS tools.',
+      description='GBT CAN bus parser.',
       long_description=open('README.rst', 'r').read(),
       long_description_content_type='text/x-rst',
       author='Anand Singh',
@@ -25,7 +25,7 @@ setup(name='GBT-parser',
       keywords=['can', 'can bus', 'dbc', 'kcd', 'automotive'],
       url='https://github.com/AnandSingh-Euler/GBT-parser',
       packages=find_packages(exclude=['tests']),
-      package_data={"cantools": ["py.typed"]},
+      package_data={"GBT-parser": ["py.typed"]},
       python_requires='>=3.8',
       install_requires=[
           'bitstruct>=8.16.1',

@@ -21,7 +21,7 @@ except ImportError:
 
 import can
 if have_curses:
-    from cantools.subparsers.monitor import Monitor
+    from GBT_parser.subparsers.monitor import Monitor
 
 
 class Args(object):

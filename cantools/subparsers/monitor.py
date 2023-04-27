@@ -14,7 +14,7 @@ from .__utils__ import format_message, format_multiplexed_name
 
 class QuitError(Exception):
     pass
-import cantools
+import GBT_parser
 class Monitor(can.Listener):
 
     def __init__(self, stdscr, args):

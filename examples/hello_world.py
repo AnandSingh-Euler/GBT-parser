@@ -8,7 +8,7 @@
 
 import os
 from binascii import hexlify
-import cantools
+import GBT_parser
 
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))

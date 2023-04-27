@@ -4,7 +4,7 @@
 #
 
 import os
-import cantools
+import GBT_parser
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 INPUT_DBC_PATH = os.path.join(SCRIPT_DIR, 'dbc_input.dbc')

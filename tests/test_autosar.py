@@ -3,10 +3,10 @@
 import unittest
 import traceback
 
-import cantools
-import cantools.autosar
+import GBT_parser
+import GBT_parser.autosar
 
-from cantools.autosar.snakeauth import SnakeOilAuthenticator
+from GBT_parser.autosar.snakeauth import SnakeOilAuthenticator
 
 class CanToolsAutosarTest(unittest.TestCase):
     def test_autosar3_e2e_profile2(self):
