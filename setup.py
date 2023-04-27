@@ -11,19 +11,19 @@ def find_version():
                      re.MULTILINE).group(1)
 
 
-setup(name='cantools',
+setup(name='GBT-parser',
       version=find_version(),
       description='CAN BUS tools.',
       long_description=open('README.rst', 'r').read(),
       long_description_content_type='text/x-rst',
-      author='Erik Moqvist',
-      author_email='erik.moqvist@gmail.com',
+      author='Anand Singh',
+      author_email='anandsingh16898@gmail.com',
       license='MIT',
       classifiers=[
           'License :: OSI Approved :: MIT License',
       ],
       keywords=['can', 'can bus', 'dbc', 'kcd', 'automotive'],
-      url='https://github.com/eerimoq/cantools',
+      url='https://github.com/AnandSingh-Euler/GBT-parser',
       packages=find_packages(exclude=['tests']),
       package_data={"cantools": ["py.typed"]},
       python_requires='>=3.8',

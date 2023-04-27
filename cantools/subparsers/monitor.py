@@ -15,65 +15,6 @@ from .__utils__ import format_message, format_multiplexed_name
 class QuitError(Exception):
     pass
 import cantools
-########################################################################################################
-# class MultiPacketDecoder:
-#     def __init__(self):
-#         self.multi_packet_payload_size = None
-#         self.multi_packet_num_packets = None
-#         self.multi_packet_pgn = None
-#         self.multi_packet_buffer = None
-
-#     def on_message(self, msg):
-#         global multi_packet_payload_size, multi_packet_num_packets, multi_packet_pgn, multi_packet_buffer
-#         msg_data = msg.data
-#         msg_id = msg.arbitration_id
-
-#         # Check if it is a multi-packet message
-#         if msg_id == 0x1CEC56F4:
-#             multi_packet_payload_size = msg_data[1] + (msg_data[2] << 8)
-#             multi_packet_num_packets = msg_data[3]
-#             multi_packet_pgn = msg_data[5] + (msg_data[6] << 8) + (msg_data[7] << 16)
-#             # Initialize a buffer for the message
-#             multi_packet_buffer = bytearray(multi_packet_payload_size)
-
-#         elif msg_id == 0x1CEB56F4:
-#             packet_num = msg_data[0] - 1
-#             if packet_num < multi_packet_num_packets:
-#                 for j in range(7):
-#                     byte_index = packet_num * 7 + j
-#                     if byte_index < multi_packet_payload_size:
-#                         multi_packet_buffer[byte_index] = msg_data[1 + j]
-#                 if packet_num == multi_packet_num_packets - 1:
-#                     # All packets have been received, process the message
-#                     if(multi_packet_pgn == 4352):
-#                         canid = 0x1C1156F4
-#                     if(multi_packet_pgn == 512):
-#                         canid = 0x1C0256F4
-#                     if(multi_packet_pgn == 1356):
-#                         canid = 0x1C0656F4
-#                     # decoded = db.decode_message(canid, multi_packet_buffer)
-#                     msg.data = multi_packet_buffer
-#                     msg.arbitration_id = canid
-#                     # decoded = msg.decode(msg.data, decode_containers=True)
-
-#                     # print(canid, ": ", decoded)
-#             else:
-#                 print(f"Packet {packet_num + 1} out of range")
-
-#         # else:
-#         #     # This is a regular message
-#         #     # Parse the message using the CAN database file
-#         #     try:
-#         #         decoded = msg.decode(msg.data, decode_containers=True)
-#         #     except:
-#         #         pass
-#             # Print the parsed data
-#             # print(msg_id, ": ",decoded)
-#         return msg
-
-##################################################################################################
-
-
 class Monitor(can.Listener):
 
     def __init__(self, stdscr, args):
@@ -95,6 +36,8 @@ class Monitor(can.Listener):
         self._show_filter = False
         self._queue = queue.Queue()
         self._nrows, self._ncols = stdscr.getmaxyx()
+        # self._nrows = 11
+        # self._ncols = 17
         self._received = 0
         self._discarded = 0
         self._basetime = None
@@ -114,7 +57,6 @@ class Monitor(can.Listener):
 
         bus = self.create_bus(args)
         self._notifier = can.Notifier(bus, [self])
-        # self.multi_packet_decoder = MultiPacketDecoder()
 
     def create_bus(self, args):
         kwargs = {}
@@ -438,13 +380,9 @@ class Monitor(can.Listener):
                         canid = 0x1C0256F4
                     if(multi_packet_pgn == 1536):
                         canid = 0x1C0656F4
-                    # decoded = db.decode_message(canid, multi_packet_buffer)
                     msg.data = multi_packet_buffer
                     msg.arbitration_id = canid
                     return msg
-                    # decoded = msg.decode(msg.data, decode_containers=True)
-
-                    # print(canid, ": ", decoded)
                 return None
             else:
                 print(f"Packet {packet_num + 1} out of range")
