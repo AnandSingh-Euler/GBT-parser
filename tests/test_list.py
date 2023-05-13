@@ -11,7 +11,7 @@ except ImportError:
     from mock import call
 
 import can
-import GBT_parser.subparsers.list as list_module
+import cantools.subparsers.list as list_module
 
 try:
     from StringIO import StringIO

@@ -14,7 +14,7 @@ from .__utils__ import format_message, format_multiplexed_name
 
 class QuitError(Exception):
     pass
-import GBT_parser
+import cantools
 class Monitor(can.Listener):
 
     def __init__(self, stdscr, args):
@@ -143,7 +143,7 @@ class Monitor(can.Listener):
     def draw_title(self, row):
         self.addstr_color(row,
                           0,
-                          self.stretch('   TIMESTAMP  MESSAGE'),
+                          self.stretch('   TIMESTAMP  MESSAGE  CYCLE'),
                           curses.color_pair(1))
 
     def draw_menu(self, row):
@@ -420,7 +420,7 @@ class Monitor(can.Listener):
 
         if len(data) < message.length:
             formatted = [
-                f'{timestamp:12.3f} {message.name} '
+                f'{timestamp:12.3f} {message.name}         {message.contained_messages} '
                 f'( undecoded, {message.length - len(data)} bytes '
                 f'too short: 0x{data.hex()} )'
             ]

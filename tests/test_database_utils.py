@@ -3,7 +3,7 @@
 from parameterized import parameterized
 import unittest
 
-from GBT_parser.database.utils import sawtooth_to_network_bitnum, cdd_offset_to_dbc_start_bit
+from cantools.database.utils import sawtooth_to_network_bitnum, cdd_offset_to_dbc_start_bit
 
 class CanToolsDatabaseUtilsTest(unittest.TestCase):
 

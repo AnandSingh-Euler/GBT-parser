@@ -5,7 +5,7 @@ import sys
 import unittest
 from unittest import mock
 from io import StringIO
-import GBT_parser
+import cantools
 import matplotlib.pyplot as plt
 
 

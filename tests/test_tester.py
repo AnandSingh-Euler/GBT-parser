@@ -10,7 +10,7 @@ except ImportError:
     from Queue import Queue
     from Queue import Empty
 
-import GBT_parser
+import cantools
 
 
 class CanBus(can.BusABC):

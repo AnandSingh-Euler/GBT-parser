@@ -2,7 +2,7 @@ import os
 import unittest
 import logging
 
-import GBT_parser
+import cantools
 
 
 class CanToolsDiagnosticsDatabaseTest(unittest.TestCase):

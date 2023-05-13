@@ -1,7 +1,7 @@
 import unittest
 import io
 
-import GBT_parser
+import cantools
 
 
 class TestLogreaderFormats(unittest.TestCase):

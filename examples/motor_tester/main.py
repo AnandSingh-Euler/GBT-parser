@@ -4,7 +4,7 @@
 #
 
 import os
-import GBT_parser
+import cantools
 import can
 
 
