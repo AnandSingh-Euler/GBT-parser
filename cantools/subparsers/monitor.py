@@ -471,7 +471,7 @@ class Monitor(can.Listener):
                 ]
             else:
                 formatted = [
-                    f'{timestamp:12.3f} {dbmsg.name} (',
+                    f'{timestamp:12.3f} {dbmsg.name} {dbmsg.comment} (',
                     ' '*14+f'    undecodable: 0x{data.hex()}',
                     ' '*14+f')'
                 ]

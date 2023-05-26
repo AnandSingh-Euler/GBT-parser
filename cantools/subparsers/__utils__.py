@@ -56,8 +56,8 @@ def _format_message_multi_line(message : Message,
         '    ' + formatted_signal
         for formatted_signal in formatted_signals
     ]
-
-    return MULTI_LINE_FMT.format(message=message.name,
+    joined_message = "{} {} ".format(message.name, message.comment)
+    return MULTI_LINE_FMT.format(message=joined_message,
                                  signals=',\n'.join(indented_signals))
 
 def _format_container_single_line(message : Message,
