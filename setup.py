@@ -34,7 +34,7 @@ setup(name='GBT_parser',
           'diskcache',
           'argparse_addons',
           'typing_extensions>=3.10.0.0',
-          'crccheck'
+          'crccheck',
           'windows-curses',
       ],
       extras_require={

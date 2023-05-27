@@ -4,17 +4,15 @@ import curses
 import queue
 import re
 import time
-
+import logging
 import can
 from argparse_addons import Integer
-
+import datetime
 from .. import database
 from .__utils__ import format_message, format_multiplexed_name
-
-
+import os
 class QuitError(Exception):
     pass
-import cantools
 class Monitor(can.Listener):
 
     def __init__(self, stdscr, args):
@@ -36,8 +34,7 @@ class Monitor(can.Listener):
         self._show_filter = False
         self._queue = queue.Queue()
         self._nrows, self._ncols = stdscr.getmaxyx()
-        # self._nrows = 11
-        # self._ncols = 17
+        self._count =1
         self._received = 0
         self._discarded = 0
         self._basetime = None
@@ -46,7 +43,7 @@ class Monitor(can.Listener):
         self.multi_packet_num_packets = None
         self.multi_packet_pgn = None
         self.multi_packet_buffer = None
-
+        self._log = args.log
         stdscr.keypad(True)
         stdscr.nodelay(True)
         curses.use_default_colors()
@@ -55,8 +52,25 @@ class Monitor(can.Listener):
         curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)
         curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
 
+        if self._log: 
+            current_datetime = datetime.datetime.now()
+            datetime_string = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+            log_file_path = os.path.join(os.getcwd(), f"Log_{datetime_string}.log")
+            self.logger = logging.getLogger('can_logger')
+            self.logger.setLevel(logging.INFO)
+            file_handler = logging.FileHandler(log_file_path )
+            file_handler.setLevel(logging.INFO)
+            self.logger.addHandler(file_handler)   
+
         bus = self.create_bus(args)
+
         self._notifier = can.Notifier(bus, [self])
+
+
+    def finish_logging(self):
+        for handler in self.logger.handlers:
+            handler.close()
+        logging.shutdown()
 
     def create_bus(self, args):
         kwargs = {}
@@ -222,6 +236,8 @@ class Monitor(can.Listener):
 
     def process_user_input_menu(self, key):
         if key == 'q':
+            if self._log: 
+                self.finish_logging()
             raise QuitError()
         elif key == 'p':
             self._playing = not self._playing
@@ -395,8 +411,9 @@ class Monitor(can.Listener):
         # message = self._queue.get_nowait()
         frame_id = message.arbitration_id
         data = message.data
+        dlc= message.dlc
         timestamp = message.timestamp
-
+        
         if self._basetime is None:
             self._basetime = timestamp
 
@@ -410,6 +427,12 @@ class Monitor(can.Listener):
 
         try:
             message = self._dbase.get_message_by_frame_id(frame_id)
+            if self._log: 
+                timestamp =  round((timestamp*1000), 1)
+                log_str = f"{self._count:>6})   {timestamp:>9}  Rx     {frame_id:08X}  {dlc}  {' '.join(f'{b:02X}' for b in data)}"
+                self.logger.info(log_str)
+                self._count += 1
+            
         except KeyError:
             self._discarded += 1
             return
@@ -655,4 +678,9 @@ def add_subparser(subparsers):
     monitor_parser.add_argument(
         'database',
         help='Database file.')
+    monitor_parser.add_argument(
+        '-l','--log',
+        action='store_true',
+        help='To save a log file.')
     monitor_parser.set_defaults(func=_do_monitor)
+
