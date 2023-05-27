@@ -55,7 +55,7 @@ class Monitor(can.Listener):
         if self._log: 
             current_datetime = datetime.datetime.now()
             datetime_string = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
-            log_file_path = os.path.join(os.getcwd(), f"Log_{datetime_string}.log")
+            log_file_path = os.path.join(os.getcwd(), f"Log_{datetime_string}.trc")
             self.logger = logging.getLogger('can_logger')
             self.logger.setLevel(logging.INFO)
             file_handler = logging.FileHandler(log_file_path )
